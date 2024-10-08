@@ -1,3 +1,5 @@
+console.log("Application starting...");
+
 const express = require("express");
 const formidable = require("formidable");
 const path = require("path");
