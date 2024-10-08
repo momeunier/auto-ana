@@ -14,5 +14,14 @@
   "routes": [
     { "src": "/upload-videos", "dest": "app.js" },
     { "src": "/(.*)", "dest": "/dist/$1" }
-  ]
+  ],
+  "functions": {
+    "api/*.js": {
+      "maxDuration": 60,
+      "memory": 1024,
+      "bodyParser": {
+        "sizeLimit": "32mb"
+      }
+    }
+  }
 }
