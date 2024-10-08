@@ -1,5 +1,5 @@
 console.log("Application starting...");
-
+console.error("This is a critical log message");
 const express = require("express");
 const formidable = require("formidable");
 const path = require("path");
