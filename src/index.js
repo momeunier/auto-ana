@@ -1,9 +1,12 @@
+import { inject } from "@vercel/analytics";
 import config from "./config.js";
-
 import { marked } from "marked";
 import { Spinner } from "spin.js";
 import "spin.js/spin.css";
 import "./styles/main.css";
+
+// Inject Vercel Analytics
+inject();
 
 try {
   document.addEventListener("DOMContentLoaded", () => {
