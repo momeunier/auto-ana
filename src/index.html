@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Shook Video Analysis</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <script
+      src="https://kit.fontawesome.com/your-actual-kit-code.js"
+      crossorigin="anonymous"
+    ></script>
+  </head>
+  <body>
+    <header>
+      <h1>Shook Video Analysis</h1>
+      <p class="tagline">Unlock the power of your TikTok content</p>
+    </header>
+
+    <main id="main-container">
+      <section id="input-section" class="card">
+        <h2>Step 1: Upload Your Content</h2>
+        <div class="upload-area">
+          <div class="upload-box">
+            <label for="video-input" class="upload-label">
+              <i class="fas fa-video"></i>
+              Upload Video Files
+            </label>
+            <input type="file" id="video-input" accept="video/*" multiple />
+          </div>
+          <div id="file-list" class="file-list"></div>
+        </div>
+
+        <div class="upload-area">
+          <div class="upload-box">
+            <label for="csv-input" class="upload-label">
+              <i class="fas fa-file-csv"></i>
+              Upload CSV File (optional)
+            </label>
+            <input type="file" id="csv-input" accept=".csv" />
+          </div>
+          <div id="csv-file-name"></div>
+        </div>
+
+        <div class="prompt-area">
+          <h3>Custom Prompt (optional)</h3>
+          <textarea
+            id="custom-prompt"
+            rows="4"
+            placeholder="Enter your custom prompt here to guide the analysis"
+          ></textarea>
+        </div>
+
+        <button id="preview-button" class="btn" style="display: none">
+          Preview Videos
+        </button>
+      </section>
+
+      <section id="preview-section" class="card" style="display: none">
+        <h2>Step 2: Preview and Match Videos</h2>
+        <div id="video-previews"></div>
+        <div id="csv-matching"></div>
+        <button id="match-button" class="btn btn-primary" style="display: none">
+          Confirm Matches and Analyze
+        </button>
+      </section>
+
+      <section id="analysis-section" class="card" style="display: none">
+        <h2>Step 3: Analysis Results</h2>
+        <div id="analysis-container"></div>
+        <div id="message-container"></div>
+        <div id="progress-container"></div>
+      </section>
+    </main>
+
+    <div class="spinner-backdrop">
+      <div id="spinner"></div>
+    </div>
+
+    <footer>
+      <p>&copy; 2023 Shook Video Analysis. All rights reserved.</p>
+    </footer>
+  </body>
+</html>
