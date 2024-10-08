@@ -16,7 +16,7 @@ require("dotenv").config();
 console.log("Server starting...");
 
 const app = express();
-const port = process.env.PORT || 3001;
+const port = process.env.PORT || 3000;
 
 app.use(express.static("dist"));
 app.use("/node_modules", express.static(path.join(__dirname, "node_modules")));
@@ -215,7 +215,7 @@ async function deleteFile(filePath) {
 // Remove the unused deleteUploadedFiles function
 
 app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
+  console.log(`Server running on port ${port}`);
 });
 
 // Serve static files from the 'dist' directory

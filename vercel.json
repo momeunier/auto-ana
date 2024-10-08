@@ -4,18 +4,7 @@
     {
       "src": "app.js",
       "use": "@vercel/node"
-    },
-    {
-      "src": "package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "dist",
-        "buildCommand": "npm run build"
-      }
     }
   ],
-  "routes": [
-    { "src": "/upload-videos", "dest": "app.js" },
-    { "src": "/(.*)", "dest": "/dist/$1" }
-  ]
+  "routes": [{ "src": "/(.*)", "dest": "/app.js" }]
 }
