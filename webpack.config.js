@@ -27,23 +27,11 @@ module.exports = {
       template: "./src/index.html",
     }),
   ],
-  devServer: {
-    static: {
-      directory: path.join(__dirname, "dist"),
-    },
-    compress: true,
-    port: 3000,
-    proxy: [
-      {
-        context: ["/upload-videos"],
-        target: "http://localhost:3001",
-      },
-    ],
-  },
-  watch: true,
-  watchOptions: {
-    ignored: /node_modules/,
-    aggregateTimeout: 300,
-    poll: 1000,
-  },
+  // Remove or comment out the following lines:
+  // watch: true,
+  // watchOptions: {
+  //   ignored: /node_modules/,
+  //   aggregateTimeout: 300,
+  //   poll: 1000,
+  // },
 };
