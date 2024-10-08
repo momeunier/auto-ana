@@ -222,3 +222,11 @@ app.listen(port, () => {
 app.get("/api/test", (req, res) => {
   res.json({ message: "API is working" });
 });
+
+// Serve static files from the 'dist' directory
+app.use(express.static(path.join(__dirname, "dist")));
+
+// For any other routes, serve the index.html file
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "dist", "index.html"));
+});

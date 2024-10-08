@@ -4,7 +4,15 @@
     {
       "src": "app.js",
       "use": "@vercel/node"
+    },
+    {
+      "src": "package.json",
+      "use": "@vercel/static-build",
+      "config": { "distDir": "dist" }
     }
   ],
-  "routes": [{ "src": "/(.*)", "dest": "/app.js" }]
+  "routes": [
+    { "src": "/upload-videos", "dest": "app.js" },
+    { "src": "/(.*)", "dest": "/dist/$1" }
+  ]
 }
