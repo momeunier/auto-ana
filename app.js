@@ -2,7 +2,6 @@ const express = require("express");
 const formidable = require("formidable");
 const path = require("path");
 const fs = require("fs").promises;
-const puppeteer = require("puppeteer");
 const { DEFAULT_PROMPT } = require("./src/config.js");
 const {
   GoogleGenerativeAI,
@@ -10,6 +9,7 @@ const {
   HarmBlockThreshold,
 } = require("@google/generative-ai");
 const { GoogleAIFileManager } = require("@google/generative-ai/server");
+const { uploadToS3, downloadFromS3, deleteFromS3 } = require("./s3Manager");
 
 require("dotenv").config();
 
@@ -132,30 +132,42 @@ app.post("/upload-videos", async (req, res) => {
     console.log("Initial full prompt:", fullPrompt);
 
     try {
-      console.log("Uploading files to Gemini");
-      const geminiFiles = [];
+      console.log("Uploading files to S3");
+      const s3Files = [];
       for (const [index, file] of uploadedFiles.entries()) {
-        const geminiFile = await uploadToGemini(
-          file.filepath,
-          file.mimetype,
-          file.originalFilename
-        );
-        geminiFiles.push(geminiFile);
-        fullPrompt += `${geminiFiles.length}. ${geminiFile.originalName} (Gemini file: ${geminiFile.name}, CSV row: ${videoMatches[index].csvIndex})\n`;
+        const s3Key = `videos/${Date.now()}-${file.originalFilename}`;
+        await uploadToS3(file.filepath, s3Key);
+        s3Files.push({ key: s3Key, originalName: file.originalFilename });
+        fullPrompt += `${s3Files.length}. ${file.originalFilename} (S3 key: ${s3Key}, CSV row: ${videoMatches[index].csvIndex})\n`;
       }
 
       if (csvFile) {
-        const csvGeminiFile = await uploadToGemini(
-          csvFile.filepath,
-          csvFile.mimetype,
-          csvFile.originalFilename
-        );
-        geminiFiles.push(csvGeminiFile);
-        fullPrompt += `${geminiFiles.length}. ${csvGeminiFile.originalName} (Gemini file: ${csvGeminiFile.name})\n`;
+        const s3Key = `csv/${Date.now()}-${csvFile.originalFilename}`;
+        await uploadToS3(csvFile.filepath, s3Key);
+        s3Files.push({ key: s3Key, originalName: csvFile.originalFilename });
+        fullPrompt += `${s3Files.length}. ${csvFile.originalFilename} (S3 key: ${s3Key})\n`;
 
         // Read CSV content and add it to the prompt
         const csvContent = await fs.readFile(csvFile.filepath, "utf-8");
         fullPrompt += `\n## CSV Content:\n${csvContent}\n`;
+      }
+
+      console.log("Uploading files to Gemini");
+      const geminiFiles = [];
+      for (const s3File of s3Files) {
+        const tempFilePath = path.join(
+          __dirname,
+          "temp",
+          s3File.key.split("/").pop()
+        );
+        await downloadFromS3(s3File.key, tempFilePath);
+        const geminiFile = await uploadToGemini(
+          tempFilePath,
+          path.extname(s3File.originalName).slice(1),
+          s3File.originalName
+        );
+        geminiFiles.push(geminiFile);
+        await fs.unlink(tempFilePath);
       }
 
       console.log("Waiting for files to be active");
@@ -184,8 +196,14 @@ app.post("/upload-videos", async (req, res) => {
 
       console.log("Received response from Gemini");
 
-      // Clean up the uploaded files
-      console.log("Cleaning up uploaded files");
+      // Clean up the uploaded files from S3
+      console.log("Cleaning up uploaded files from S3");
+      for (const s3File of s3Files) {
+        await deleteFromS3(s3File.key);
+      }
+
+      // Clean up local files
+      console.log("Cleaning up local files");
       for (const file of [...uploadedFiles, csvFile].filter(Boolean)) {
         await deleteFile(file.filepath);
       }
@@ -212,8 +230,6 @@ async function deleteFile(filePath) {
     }
   }
 }
-
-// Remove the unused deleteUploadedFiles function
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
